@@ -78,7 +78,7 @@ This will server the API on : http://localhost:8000
 
 The Next.js user interface for breast cancer prediction is available on GitHub. You can find the source code and project details in the following repository:
 
-- **Repository:** [Your Next.js UI Repository](https://github.com/your-username/your-nextjs-ui)
+- **Repository:** [breast_cancer_prediction Web App](https://github.com/hamza-hadj-aissa/breast_cancer_prediction_ui)
 
 ### Getting Started
 
