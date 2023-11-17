@@ -21,14 +21,10 @@ dataset_df.drop(columns=["id"], inplace=True)
 
 print("Transforming...")
 # transform categorical data
+# M = malignant = 1, B = benign = 0
 le = LabelEncoder()
 dataset_df['diagnosis'] = le.fit_transform(dataset_df['diagnosis'])
 dataset_df.sample(10)
-
-# transform continuous data
-std_sc = StandardScaler()
-dataset_df.iloc[:, 1:] = std_sc.fit_transform(dataset_df.iloc[:, 1:])
-dataset_df.head()
 
 
 X = dataset_df.drop("diagnosis", axis=1)
@@ -78,7 +74,7 @@ def visualize_results(criterion_labels, estimator_labels, threshold_labels, accu
     plt.show()
 
 
-def start_test():
+def start_test(X_train, X_test, Y_train, Y_test):
     accuracies = []
     criterion_labels = []
     estimator_labels = []
@@ -110,27 +106,28 @@ def start_test():
 
                 corr_features = get_high_correlated_features(
                     X_train, threshold)
-                # print("Number of highly correlated features:", len(corr_features))
+                print("Highly correlated features number:", len(corr_features))
 
+                selected_features_X_train = X_train.drop(corr_features, axis=1)
+                selected_features_X_test = X_test.drop(corr_features, axis=1)
+                number_of_selected_features = selected_features_X_train.shape[1]
+                print("Number of features:", number_of_selected_features)
                 # store number of features as a label
-                number_of_features.append(len(corr_features))
-
-                X_train.drop(corr_features, axis=1)
-                X_test.drop(corr_features, axis=1)
+                number_of_features.append(number_of_selected_features)
 
                 model = RandomForestClassifier(
-                    n_estimators=estimator, criterion=criterion, random_state=0)
-                model.fit(X_train, Y_train)
+                    n_estimators=estimator, criterion=criterion, random_state=0)  # type: ignore
+                model.fit(selected_features_X_train, Y_train)
 
                 # Make predictions
-                Y_pred = model.predict(X_test)
+                Y_pred = model.predict(selected_features_X_test)
 
                 # Evaluate accuracy
                 accuracy = accuracy_score(Y_pred, Y_test)
                 # store accuracy as a label
                 accuracies.append(accuracy)
 
-                print(f"Accuracy: {accuracy}")
+                print(f"Accuracy: {accuracy * 100} %")
 
                 print(
                     "--------------------------------------------------------------------")
@@ -150,18 +147,18 @@ def get_model(X_train, X_test, Y_train, Y_test, criterion, estimator, threshold)
     # features selection
     corr_features = get_high_correlated_features(
         X_train, threshold)
-    X_train.drop(corr_features, axis=1)
-    X_test.drop(corr_features, axis=1)
+    selected_features_X_train = X_train.drop(corr_features, axis=1)
+    selected_features_X_test = X_test.drop(corr_features, axis=1)
 
     model = RandomForestClassifier(
         n_estimators=estimator, criterion=criterion, random_state=0)
-    model.fit(X_train, Y_train)
+    model.fit(selected_features_X_train, Y_train)
 
     # Make predictions
-    Y_pred = model.predict(X_test)
+    Y_pred = model.predict(selected_features_X_test)
 
     # Evaluate accuracy
-    accuracy = accuracy_score(Y_pred, Y_test)
+    # accuracy = accuracy_score(Y_pred, Y_test)
 
     # Display classification report
     print("Classification Report:")
@@ -172,11 +169,11 @@ def get_model(X_train, X_test, Y_train, Y_test, criterion, estimator, threshold)
     print("Confusion Matrix:")
     print(conf_matrix)
 
-    return [model, corr_features]
+    return model
 
 
 print("Testing model trainings...")
-model_test_results = start_test()
+model_test_results = start_test(X_train, X_test, Y_train, Y_test)
 
 model_test_results_df = pd.DataFrame({
     'criterion_labels': model_test_results["criterion_labels"],
@@ -206,9 +203,10 @@ print(f"Number of estimators: {n_estimator}")
 print(f"Threshold: {threshold}")
 print(f"Number of features: {number_of_features}")
 print(f"Selected features: {
-      list(get_high_correlated_features(X_train, threshold))}")
-# Selected features: ['concave points_mean', 'perimeter_se', 'area_mean', 'texture_worst', 'area_se', 'perimeter_mean', 'area_worst', 'radius_worst', 'concave points_worst', 'perimeter_worst']
-print(f"Accuracy: {accuracy}")
+      list(X_train.drop(get_high_correlated_features(X_train, threshold), axis=1).columns)}")
+
+
+print(f"Accuracy: {accuracy * 100} %")
 model_training_start_time = time.time()
 model = get_model(X_train, X_test, Y_train, Y_test,
                   criterion, n_estimator, threshold)
