@@ -34,12 +34,13 @@ class GetPredictionOutput(Resource):
     def post(self):
         try:
             data = request.get_json()
+            print(data)
             # dict_data = json.loads(data)
             # df = pd.DataFrame(dict_data.values(), columns=dict_data.keys())
             # print(df)
             predict = predict_breast_cancer(data)
             predictOutput = predict
-            return {'predict': predictOutput}
+            return json.dumps(predictOutput)
 
         except Exception as error:
             return {'error': error}
