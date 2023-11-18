@@ -5,6 +5,39 @@ The Breast Cancer Prediction API is a Flask-based web service that provides a si
 ## Machine learning model
 The predictive model is built using the Random Forest Classifier, trained on the well-known Breast Cancer Wisconsin (Diagnostic) Dataset. The model has undergone rigorous testing and validation to ensure reliable predictions.
 
+### Testing and training the model
+The testing phase is a critical step in evaluating the performance of the breast cancer prediction model based on Random Forest classification. The process involves the following key steps:
+
+* Identification of Highly Correlated Features:
+
+    Features with high correlation are identified using a specified threshold. This step aims to reduce redundant data and enhance the model's efficiency.
+
+* Testing with Different Criteria, Estimators, and Thresholds:
+
+    The model is rigorously tested with varying criteria (Gini and Entropy), the number of estimators, and different correlation thresholds, providing insights into the impact on model performance and aiding in feature optimization
+
+* Performance Metrics and Labels:
+
+    Accuracy is measured for each test configuration, offering a quantitative assessment of the model's predictive capabilities. Labels such as the criterion used, the number of estimators, the features selection threshold, and the number of selected features are recorded.
+* Results Visualization (Optional):
+
+    Results can be visualized to provide a clear overview of how different criteria, estimators, and features selection thresholds influence model accuracy.
+* Execution Time Tracking:
+
+    The duration of the testing phase is recorded, contributing to an understanding of the model's computational efficiency.
+
+ Performance Visualization
+The scatter plot visualizes the performance of the breast cancer prediction model under different configurations. Key factors influencing the model, such as the choice of criterion (Gini or Entropy), the number of estimators, and the features selection threshold, are represented. The x-axis reflects the number of estimators, the y-axis displays the accuracy achieved, and the color and size variations indicate the criterion and threshold, respectively.
+
+### Test Configuration Visualization
+The scatter plot provides a visual representation of the breast cancer prediction model's performance across various test configurations. Each point on the plot corresponds to a specific set of parameters, including the choice of criterion (Gini or Entropy), the number of estimators, and the features selection threshold. The x-axis represents the number of estimators, the y-axis represents the achieved accuracy, and the color and size of the points indicate the criterion and threshold, respectively.
+
+
+<div align="center">
+  <img src="./images/tests_performance.png" alt="Confusion Matrix" width="800"/>
+</div>
+
+
 ### Confusion Matrix Evaluation
 The confusion matrix plot provides a concise snapshot of our breast cancer prediction model's performance in distinguishing between Benign (B) and Malignant (M) cases. It showcases True Positives, True Negatives, False Positives, and False Negatives, offering a quick assessment of the model's accuracy in classifying different types of breast cancer. This visual aid is instrumental in gauging the model's reliability and precision in clinical scenarios.
 
@@ -12,8 +45,6 @@ The confusion matrix plot provides a concise snapshot of our breast cancer predi
 <div align="center">
   <img src="./images/confusion_matrix.png" alt="Confusion Matrix" />
 </div>
-
-
 
 ## Installation
 
