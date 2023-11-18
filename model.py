@@ -42,20 +42,6 @@ correlation_matrix = X_train.corr()
 # plt.show()
 
 
-# identify high correlated features
-# the highest ones compared to given threshold
-# are dropped to reduce redundant data
-def get_high_correlated_features(dataset, threshold):
-    col_corr = set()
-    corr_matrix = dataset.corr()
-    for i in range(len(corr_matrix.columns)):
-        for j in range(i):
-            # compare the correlation value between i and j with the value of the threshold
-            if abs(corr_matrix.iloc[i, j]) > threshold:
-                col_corr.add(corr_matrix.columns[i])
-    return col_corr
-
-
 def visualize_results(criterion_labels, estimator_labels, threshold_labels, accuracies):
     results_df = pd.DataFrame({
         'Criterion': criterion_labels,
@@ -72,6 +58,35 @@ def visualize_results(criterion_labels, estimator_labels, threshold_labels, accu
     plt.ylabel('Accuracy')
     plt.legend(title='Criterion')
     plt.show()
+
+
+# identify high correlated features
+# the highest ones compared to given threshold
+# are dropped to reduce redundant data
+def get_high_correlated_features(dataset, threshold):
+    col_corr = set()
+    corr_matrix = dataset.corr()
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i):
+            # compare the correlation value between i and j with the value of the threshold
+            if abs(corr_matrix.iloc[i, j]) > threshold:
+                col_corr.add(corr_matrix.columns[i])
+    return col_corr
+
+
+def get_selected_features_by_threshold(dataset, thresholds):
+    corr_features_list = dict()
+    for threshold in thresholds:
+        corr_features = get_high_correlated_features(dataset, threshold)
+        selected_features = dataset.drop(corr_features, axis=1).columns
+        corr_features_list[threshold] = selected_features
+    return corr_features_list
+
+
+# preporcess highly correlated features and drop them
+# this is a list of the selected features for each threshold
+selected_features_list = get_selected_features_by_threshold(
+    X, [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9])
 
 
 def start_test(X_train, X_test, Y_train, Y_test):
@@ -104,12 +119,9 @@ def start_test(X_train, X_test, Y_train, Y_test):
                 estimator_labels.append(estimator)
                 threshold_labels.append(threshold)
 
-                corr_features = get_high_correlated_features(
-                    X_train, threshold)
-                print("Highly correlated features number:", len(corr_features))
-
-                selected_features_X_train = X_train.drop(corr_features, axis=1)
-                selected_features_X_test = X_test.drop(corr_features, axis=1)
+                selected_features = selected_features_list[threshold]
+                selected_features_X_train = X_train[selected_features]
+                selected_features_X_test = X_test[selected_features]
                 number_of_selected_features = selected_features_X_train.shape[1]
                 print("Number of features:", number_of_selected_features)
                 # store number of features as a label
@@ -145,10 +157,9 @@ def start_test(X_train, X_test, Y_train, Y_test):
 
 def get_model(X_train, X_test, Y_train, Y_test, criterion, estimator, threshold):
     # features selection
-    corr_features = get_high_correlated_features(
-        X_train, threshold)
-    selected_features_X_train = X_train.drop(corr_features, axis=1)
-    selected_features_X_test = X_test.drop(corr_features, axis=1)
+    selected_features = selected_features_list[threshold]
+    selected_features_X_train = X_train[selected_features]
+    selected_features_X_test = X_test[selected_features]
 
     model = RandomForestClassifier(
         n_estimators=estimator, criterion=criterion, random_state=0)
@@ -202,8 +213,7 @@ print(f"Criterion: {criterion}")
 print(f"Number of estimators: {n_estimator}")
 print(f"Threshold: {threshold}")
 print(f"Number of features: {number_of_features}")
-print(f"Selected features: {
-      list(X_train.drop(get_high_correlated_features(X_train, threshold), axis=1).columns)}")
+print(f"Selected features: {list(selected_features_list[threshold])}")
 
 
 print(f"Accuracy: {accuracy * 100} %")
