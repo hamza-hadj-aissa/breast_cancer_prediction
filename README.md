@@ -5,6 +5,15 @@ The Breast Cancer Prediction API is a Flask-based web service that provides a si
 ## Machine learning model
 The predictive model is built using the Random Forest Classifier, trained on the well-known Breast Cancer Wisconsin (Diagnostic) Dataset. The model has undergone rigorous testing and validation to ensure reliable predictions.
 
+### Confusion Matrix Evaluation
+The confusion matrix plot provides a concise snapshot of our breast cancer prediction model's performance in distinguishing between Benign (B) and Malignant (M) cases. It showcases True Positives, True Negatives, False Positives, and False Negatives, offering a quick assessment of the model's accuracy in classifying different types of breast cancer. This visual aid is instrumental in gauging the model's reliability and precision in clinical scenarios.
+
+
+<div align="center">
+  <img src="./images/confusion_matrix.png" alt="Confusion Matrix" />
+</div>
+
+
 
 ## Installation
 
